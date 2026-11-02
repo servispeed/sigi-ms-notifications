@@ -1,0 +1,62 @@
+name: CI/CD Pipeline Node.js
+
+on:
+  push:
+    branches:
+      - main
+      - testing
+  pull_request:
+    branches:
+      - develop
+      - testing
+      - main
+
+jobs:
+  # ==========================================
+  # FASE 1: INTEGRACIÓN CONTINUA (Ejecución de Pruebas)
+  # ==========================================
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      # Ejecuta todas las pruebas unitarias. Si una falla, el pipeline se detiene aquí.
+      - name: Ejecutar Pruebas Unitarias
+        run: npm run test
+
+  # ==========================================
+  # FASE 2: DESPLIEGUE CONTINUO EN VPS
+  # ==========================================
+  deploy:
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/testing')
+    needs: build-and-test
+    runs-on: self-hosted
+    
+    steps:
+      - name: Checkout del código en el servidor
+        uses: actions/checkout@v4
+
+      - name: Construir y Levantar Docker (Producción)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker compose -f docker-compose.prod.yaml down || true
+          docker build -t ${{ github.event.repository.name }}:latest .
+          docker compose -f docker-compose.prod.yaml up -d --build
+          docker system prune -f
+
+      - name: Construir y Levantar Docker (Testing)
+        if: github.ref == 'refs/heads/testing'
+        run: |
+          docker compose -f docker-compose.test.yaml down || true
+          docker build -t ${{ github.event.repository.name }}:test .
+          docker compose -f docker-compose.test.yaml up -d --build
