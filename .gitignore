@@ -6,6 +6,6 @@ npm-debug.log
 docker-compose.yaml
 mosquitto.conf
 
-.scannerwork/
+.scannerwork/ 
 
 coverage/
