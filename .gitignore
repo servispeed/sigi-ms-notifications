@@ -7,3 +7,5 @@ docker-compose.yaml
 mosquitto.conf
 
 .scannerwork/
+
+coverage/
