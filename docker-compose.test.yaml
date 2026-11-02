@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  sigi-mqtt-broker-test:
+    image: eclipse-mosquitto:latest
+    container_name: sigi-mqtt-test
+    ports:
+      - "172.17.0.1:1884:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+    restart: unless-stopped
+
+  ms-notifications-test:
+    build: .
+    image: sigi-ms-notifications:test
+    container_name: sigi-ms-notifications-test
+    ports:
+      - "172.17.0.1:8083:8085"
+    environment:
+      - MQTT_URL=mqtt://sigi-mqtt-broker-test:1883
+    depends_on:
+      - sigi-mqtt-broker-test
+    restart: unless-stopped
