@@ -2,7 +2,7 @@ import { WebSocketServer } from 'ws';
 import mqtt from 'mqtt';
 
 // --- Strategy Pattern
-class WebSocketDelivery {
+export class WebSocketDelivery {
     async send(payload, activeConnections) {
         const targetSocket = activeConnections.get(payload.receptorId);
         if (targetSocket && targetSocket.readyState === 1) { // 1 = OPEN
@@ -16,7 +16,7 @@ class WebSocketDelivery {
 }
 
 // --- Dispatcher
-class NotificationDispatcher {
+export class NotificationDispatcher {
     constructor() {
         this.strategies = [];
         this.activeConnections = new Map();
@@ -39,7 +39,7 @@ const dispatcher = new NotificationDispatcher();
 dispatcher.registerStrategy(new WebSocketDelivery());
 
 // --- Websocket Server
-const wss = new WebSocketServer({ port: 8085 });
+export const wss = new WebSocketServer({ port: 8085 });
 console.log('Servidor WebSocket escuchando en el puerto 8085');
 
 wss.on('connection', (ws) => {
@@ -71,7 +71,7 @@ wss.on('connection', (ws) => {
 });
 
 // --- MQTT Client
-const mqttClient = mqtt.connect(process.env.MQTT_URL || 'mqtt://sigi-mqtt-broker:1883');
+export const mqttClient = mqtt.connect(process.env.MQTT_URL || 'mqtt://sigi-mqtt-broker:1883');
 
 mqttClient.on('connect', () => {
     console.log('Conectado exitosamente al Broker MQTT local');

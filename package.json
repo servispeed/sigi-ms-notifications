@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage"  
   },
   "keywords": [],
   "author": "",
@@ -14,5 +14,20 @@
   "dependencies": {
     "mqtt": "^5.15.2",
     "ws": "^8.21.1"
+  },
+  "devDependencies": {
+    "jest": "^30.5.2",
+    "jest-sonar-reporter": "^2.0.0",
+    "sonarqube-scanner": "^4.4.0"
+  },
+  "jest": {
+    "testResultsProcessor": "jest-sonar-reporter",
+    "collectCoverage": true,
+    "coverageReporters": ["lcov", "text"]
+  },
+  "jestSonar": {
+    "reportPath": "coverage",
+    "reportFile": "test-report.xml",
+    "indent": 4
   }
 }
