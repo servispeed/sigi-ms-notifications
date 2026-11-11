@@ -5,7 +5,7 @@ services:
     image: eclipse-mosquitto:latest
     container_name: sigi-mqtt-prod
     ports:
-      - "172.17.0.1:1883:1883"
+      - "1883:1883"
     volumes:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
     restart: unless-stopped
@@ -15,7 +15,7 @@ services:
     image: sigi-ms-notifications:latest
     container_name: sigi-ms-notifications-prod
     ports:
-      - "172.17.0.1:8082:8085"
+      - "8082:8085"
     environment:
       - MQTT_URL=mqtt://sigi-mqtt-broker:1883
     depends_on:
